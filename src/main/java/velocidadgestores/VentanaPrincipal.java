@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package database;
+package velocidadgestores;
+import database.*;
+
 import java.util.*;
 import javax.swing.*;
 import java.sql.*;
@@ -30,6 +32,7 @@ public class VentanaPrincipal extends JFrame {
      * Inicializa los componentes de la interfaz gráfica de usuario.
      */
     private void initComponents() {
+
         // Etiquetas de texto para los campos
         jLabel1 = new JLabel("id:");
         jLabel2 = new JLabel("descripción:");
@@ -211,6 +214,10 @@ public class VentanaPrincipal extends JFrame {
             }
         });
 
+        // Botón de "DB Config"
+        dbConfigButton = new JButton("DB Config");
+//        dbConfigButton.addActionListener(e -> abrirDBConfig());
+
 
         // Configuración del diseño del contenedor principal
         GroupLayout layout = new GroupLayout(getContentPane());
@@ -226,6 +233,8 @@ public class VentanaPrincipal extends JFrame {
                                                                 .addComponent(jLabel1)
                                                                 .addGap(73, 73, 73)
                                                                 .addComponent(TXTid, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE))
+                                                                .addGap(73,73,73)
+                                                                .addComponent(dbConfigButton)
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(jLabel2)
                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
@@ -315,6 +324,7 @@ public class VentanaPrincipal extends JFrame {
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel1)
                                         .addComponent(TXTid, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(dbConfigButton)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel2)
@@ -393,8 +403,7 @@ public class VentanaPrincipal extends JFrame {
      * Este método establece una conexión con la base de datos Oracle.
      */
     private void BTNconexionoracleActionPerformed(ActionEvent evt) {
-        ConexionOracle conexion = new ConexionOracle();
-        conexion.conectar();
+        conexionOracle.conectar();
     }
 
     /**
@@ -405,7 +414,7 @@ public class VentanaPrincipal extends JFrame {
         ContadorTiempo contadorTiempo = new ContadorTiempo();
         contadorTiempo.ContadorTiempo();
 
-        ConexionPostgresql conexion = new ConexionPostgresql().conectar();
+        conexionPostgresql.conectar();
         int contador = 0;
 
         while (true) {
@@ -417,7 +426,7 @@ public class VentanaPrincipal extends JFrame {
             if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
                 break;
             } else {
-                conexion.ejecutar("INSERT INTO producto VALUES (" +
+                conexionPostgresql.ejecutar("INSERT INTO producto VALUES (" +
                         Integer.parseInt(TXTid.getText()) + ", '" +
                         TXTdescripcion.getText() + "', " +
                         Float.parseFloat(TXTcosto.getText()) + ", " +
@@ -435,8 +444,7 @@ public class VentanaPrincipal extends JFrame {
      * Este método establece una conexión con la base de datos PostgreSQL.
      */
     private void BTNconexionpostgresqlActionPerformed(ActionEvent evt) {
-        ConexionPostgresql conexion = new ConexionPostgresql();
-        conexion.conectar();
+        conexionPostgresql.conectar();
     }
 
 /**
@@ -447,7 +455,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     ContadorTiempo contadorTiempo = new ContadorTiempo();
     contadorTiempo.ContadorTiempo();
 
-    ConexionOracle conexion = new ConexionOracle().conectar();
+
     int contador = 0;
 
     while (true) {
@@ -459,7 +467,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
             break;
         } else {
-            conexion.ejecutar("INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
+            conexionOracle.ejecutar("INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
                     "PRODUCTO_SEQ.NEXTVAL, " +  // Genera el valor autoincremental para PK_ID
                     Integer.parseInt(TXTid.getText()) + ", '" +
                     TXTdescripcion.getText() + "', " +
@@ -480,8 +488,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método establece una conexión con la base de datos SQL Server.
      */
     private void BTNconexionsqlserverActionPerformed(ActionEvent evt) {
-        ConexionSqlserver conexion = new ConexionSqlserver();
-        conexion.conectar();
+        conexionSqlserver.conectar();
     }
 
     /**
@@ -492,7 +499,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         ContadorTiempo contadorTiempo = new ContadorTiempo();
         contadorTiempo.ContadorTiempo();
 
-        ConexionSqlserver conexion = new ConexionSqlserver().conectar();
+        conexionSqlserver.conectar();
         int contador = 0;
 
         while (true) {
@@ -504,7 +511,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
             if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
                 break;
             } else {
-                conexion.ejecutar("INSERT INTO PRODUCTO VALUES (" +
+                conexionSqlserver.ejecutar("INSERT INTO PRODUCTO VALUES (" +
                         Integer.parseInt(TXTid.getText()) + ", '" +
                         TXTdescripcion.getText() + "', " +
                         Float.parseFloat(TXTcosto.getText()) + ", " +
@@ -522,9 +529,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarpostgresqlActionPerformed(ActionEvent evt) {
-        ConexionPostgresql conexion = new ConexionPostgresql().conectar();
-        conexion.ejecutar("DELETE FROM producto");
-        conexion.ejecutar("ALTER SEQUENCE PRODUCTO_PK_ID_seq RESTART WITH 1");
+        conexionPostgresql.conectar();
+        conexionPostgresql.ejecutar("DELETE FROM producto");
+        conexionPostgresql.ejecutar("ALTER SEQUENCE PRODUCTO_PK_ID_seq RESTART WITH 1");
 
         TXTresultado_lmd_postgresql.setText("");
         TXTresultado_sp_postgresql.setText("");
@@ -536,10 +543,10 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarOracleActionPerformed(ActionEvent evt) {
-        ConexionOracle conexion = new ConexionOracle().conectar();
-        conexion.ejecutar("DELETE FROM producto");
-        conexion.ejecutar("DROP SEQUENCE PRODUCTO_SEQ");
-        conexion.ejecutar("CREATE SEQUENCE PRODUCTO_SEQ START WITH 1 INCREMENT BY 1");
+        conexionOracle.conectar();
+        conexionOracle.ejecutar("DELETE FROM producto");
+        conexionOracle.ejecutar("DROP SEQUENCE PRODUCTO_SEQ");
+        conexionOracle.ejecutar("CREATE SEQUENCE PRODUCTO_SEQ START WITH 1 INCREMENT BY 1");
         
         TXTresultado_lmd_oracle.setText("");
         TXTresultado_sp_oracle.setText("");
@@ -551,9 +558,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarsqlserverActionPerformed(ActionEvent evt) {
-        ConexionSqlserver conexion = new ConexionSqlserver().conectar();
-        conexion.ejecutar("DELETE FROM producto");
-        conexion.ejecutar("DBCC CHECKIDENT ('PRODUCTO', RESEED, 0)");
+        conexionSqlserver.conectar();
+        conexionSqlserver.ejecutar("DELETE FROM producto");
+        conexionSqlserver.ejecutar("DBCC CHECKIDENT ('PRODUCTO', RESEED, 0)");
 
         TXTresultado_lmd_sqlserver.setText("");
         TXTresultado_sp_sqlserver.setText("");
@@ -566,11 +573,11 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      */
     private void BTNinsercion_oracle_spActionPerformed(ActionEvent evt) {
         try {
-            ConexionOracle conexion = new ConexionOracle().conectar();
+
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexion.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = conexionOracle.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -606,11 +613,11 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      */
     private void BTNinsercion_sqlserver_spActionPerformed(ActionEvent evt) {
         try {
-            ConexionSqlserver conexion = new ConexionSqlserver().conectar();
+            conexionSqlserver.conectar();
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexion.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = conexionSqlserver.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -645,11 +652,11 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      */
     private void BTNinsercion_postgresql_spActionPerformed(ActionEvent evt) {
         try {
-            ConexionPostgresql conexion = new ConexionPostgresql().conectar();
+            conexionPostgresql.conectar();
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexion.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = conexionPostgresql.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -683,9 +690,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "PRODUCTO".
      */
     private void BTNborrarmysqlserverActionPerformed(ActionEvent evt) {
-        ConexionMySqlserver conexion = new ConexionMySqlserver().conectar();
-        conexion.ejecutar("DELETE FROM PRODUCTO");
-        conexion.ejecutar("TRUNCATE TABLE PRODUCTO");
+        conexionMySqlserver.conectar();
+        conexionMySqlserver.ejecutar("DELETE FROM PRODUCTO");
+        conexionMySqlserver.ejecutar("TRUNCATE TABLE PRODUCTO");
 
         TXTresultado_lmd_mysqlserver.setText("");
         TXTresultado_sp_mysqlserver.setText("");
@@ -699,11 +706,11 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      */
     private void BTNinsercion_mysqlserver_spActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            ConexionMySqlserver conexion = new ConexionMySqlserver().conectar();
+            conexionMySqlserver.conectar();
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexion.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = conexionMySqlserver.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -739,7 +746,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     private void BTNinsercion_mysqlserver_lmd1ActionPerformed(ActionEvent evt) {
         ContadorTiempo contadorTiempo = new ContadorTiempo();
         contadorTiempo.ContadorTiempo();
-        ConexionMySqlserver conexion = new ConexionMySqlserver().conectar();
+        conexionMySqlserver.conectar();
         int contador = 0;
 
         while (true) {
@@ -752,7 +759,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 break;
             } else {
             // La columna PK_ID no se incluye en la sentencia INSERT ya que es autoincremental
-                conexion.ejecutar("INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
+                conexionMySqlserver.ejecutar("INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
                         "'" + TXTid.getText() + "', '" +  // Usar comillas simples para valores de texto
                         TXTdescripcion.getText() + "', " +
                         Float.parseFloat(TXTcosto.getText()) + ", " +
@@ -769,8 +776,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Maneja la acción del botón para conectar a la base de datos MySQL Server.
      */
     private void BTNconexionmysqlserverActionPerformed(ActionEvent evt) {
-        ConexionMySqlserver conexion = new ConexionMySqlserver();
-        conexion.conectar();
+        conexionMySqlserver.conectar();
     }
 
 
@@ -788,8 +794,8 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
             // Establecer conexión y preparar el CallableStatement según el tipo de base de datos
             if ("Oracle".equals(dbType)) {
-                ConexionOracle c = new ConexionOracle();
-                conexion = c.conectar().getConexion();
+                conexionOracle.conectar();
+                conexion = conexionOracle.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
                 for (int i = 0; i < numInserciones; i++) {
@@ -798,8 +804,8 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en Oracle.");
 
             } else if ("PostgreSQL".equals(dbType)) {
-                ConexionPostgresql c = new ConexionPostgresql();
-                conexion = c.conectar().getConexion();
+                conexionPostgresql.conectar();
+                conexion = conexionPostgresql.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
                 for (int i = 0; i < numInserciones; i++) {
@@ -808,8 +814,8 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en PostgreSQL.");
 
             } else if ("SQLServer".equals(dbType)) {
-                ConexionSqlserver c = new ConexionSqlserver();
-                conexion = c.conectar().getConexion();
+                conexionSqlserver.conectar();
+                conexion = conexionSqlserver.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
                 for (int i = 0; i < numInserciones; i++) {
@@ -818,8 +824,8 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en SQL Server.");
 
             } else if ("MySQL".equals(dbType)) {
-                ConexionMySqlserver c = new ConexionMySqlserver();
-                conexion = c.conectar().getConexion();
+                conexionMySqlserver.conectar();
+                conexion = conexionMySqlserver.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
                 for (int i = 0; i < numInserciones; i++) {
@@ -921,6 +927,16 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     }
 
 
+    // Método que abre la ventana de configuración de bases de datos
+    private void abrirDBConfig() {
+        if (dbConfigDialog == null) {
+            // Pasar las credenciales predeterminadas de la conexión
+
+            dbConfigDialog = new DBConfigD(this);
+        }
+        dbConfigDialog.setVisible(true);  // Mostrar la ventana de configuración
+    }
+
 
     /**
      * Método principal que configura el aspecto visual de la aplicación y muestra la ventana principal.
@@ -939,6 +955,8 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+
 
         /* Crear y mostrar la ventana principal */
         EventQueue.invokeLater(() -> new VentanaPrincipal().setVisible(true));
@@ -983,4 +1001,12 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     private JLabel jLabel3;
     private JLabel jLabel4;
     private JLabel jLabel5;
+    private JButton dbConfigButton;
+
+    private DBConfigD dbConfigDialog;
+
+    private ConexionOracle conexionOracle = ConexionOracle.getInstance();
+    private ConexionMySqlserver conexionMySqlserver = ConexionMySqlserver.getInstance();
+    private ConexionPostgresql conexionPostgresql = ConexionPostgresql.getInstance();
+    private ConexionSqlserver conexionSqlserver = ConexionSqlserver.getInstance();
 }

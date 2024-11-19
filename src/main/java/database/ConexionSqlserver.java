@@ -12,32 +12,55 @@ import javax.swing.JOptionPane;
  *
  * @author MCROBERTW
  */
-public class ConexionSqlserver {
+public class ConexionSqlserver extends ConexionBase {
+    private static ConexionSqlserver instance;
     private Connection conexionBD;
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+
+    private static final String DEFAULT_URL = "jdbc:sqlserver://localhost:1433;databaseName=BDPRODUCTO";
+    private static final String DEFAULT_USER = "sa";
+    private static final String DEFAULT_PASSWORD = "MS3123";
+
+    private ConexionSqlserver(){
+        dbUrl = DEFAULT_URL;
+        dbUser = DEFAULT_USER;
+        dbPassword = DEFAULT_PASSWORD;
+    }
+
+    @Override
+    protected void cargarDriver() throws ClassNotFoundException {
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    }
+
+    public static ConexionSqlserver getInstance(){
+        if (instance == null) {
+            instance = new ConexionSqlserver();
+        }
+        return instance;
+    }
+
+    @Override
+    public boolean conectar() {
+        try {
+            cargarDriver();
+            String URI_MSSQLS = dbUrl + ";user=" + dbUser + ";password=" + dbPassword + ";encrypt=false";
+            conexionBD = DriverManager.getConnection(URI_MSSQLS);
+            JOptionPane.showMessageDialog(null, "¡OK SQLSERVER!");
+            return true; // Indica que la conexión fue exitosa
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar el driver: " + e.getMessage());
+            return false; // Indica que ocurrió un error al cargar el driver
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos: " + e.getMessage());
+            return false; // Indica que ocurrió un error al conectar a la base de datos
+        }
+    }
+
+
     public Connection getConexion() {
         return conexionBD;
-    }       
-    public void setConexion(Connection conexionBD) {
-        this.conexionBD = conexionBD;
-    }
-    public ConexionSqlserver conectar() {
-        try {
-          Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");// carga el driver y oracle 
-
-//          String BaseDeDatos = "jdbc:sqlserver://DESKTOP-FLG8F71\\PRUEBA:1433;databaseName=BDPRODUCTO;integratedSecurity=true;user=sa;password=admin123;"; //
-          String BaseDeDatos = "jdbc:sqlserver://localhost:1433;databaseName=BDPRODUCTO;user=sa;password=MS3123;encrypt=false"; //
-                   
-         conexionBD = DriverManager.getConnection(BaseDeDatos);  // carga la conexion (usuario contraseña)
-
-         if (conexionBD != null) {
-             JOptionPane.showMessageDialog(null, "¡OK SQL Server!");
-         } else {
-             JOptionPane.showMessageDialog(null, "Error en la Conexión..");
-         }
-        } catch (Exception e) {
-             JOptionPane.showMessageDialog(null, e.getMessage()+"Error en la Conexión..");
-        }
-        return this;
     }
     
     public boolean ejecutar(String sql) { //

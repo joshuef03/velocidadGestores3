@@ -12,34 +12,53 @@ import javax.swing.JOptionPane;
  *
  * @author MCROBERTW
  */
-public class ConexionMySqlserver {
+public class ConexionMySqlserver extends ConexionBase {
+    private static ConexionMySqlserver instance;
     private Connection conexionBD;
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+
+    private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/BDPRODUCTO";
+    private static final String DEFAULT_USER = "root";
+    private static final String DEFAULT_PASSWORD = "MQL123";
+
+    private ConexionMySqlserver(){
+        dbUrl = DEFAULT_URL;
+        dbUser = DEFAULT_USER;
+        dbPassword = DEFAULT_PASSWORD;
+    }
+
+    @Override
+    protected void cargarDriver() throws ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+    }
+
+    public static ConexionMySqlserver getInstance(){
+        if (instance == null) {
+            instance = new ConexionMySqlserver();
+        }
+        return instance;
+    }
+
+    @Override
+    public boolean conectar() {
+        try {
+            cargarDriver();
+            conexionBD = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            JOptionPane.showMessageDialog(null, "¡OK MYSQL!");
+            return true; // Indica que la conexión fue exitosa
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar el driver: " + e.getMessage());
+            return false; // Indica que ocurrió un error al cargar el driver
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos: " + e.getMessage());
+            return false; // Indica que ocurrió un error al conectar a la base de datos
+        }
+    }
+
     public Connection getConexion() {
         return conexionBD;
-    }       
-    public void setConexion(Connection conexionBD) {
-        this.conexionBD = conexionBD;
-    }
-    public ConexionMySqlserver conectar() {
-        try {
-          Class.forName("com.mysql.cj.jdbc.Driver");// carga el driver y oracle 
-
-//          String BaseDeDatos = "jdbc:sqlserver://DESKTOP-FLG8F71\\PRUEBA:1433;databaseName=BDPRODUCTO;integratedSecurity=true;user=sa;password=admin123;"; //
-          //tring BaseDeDatos = "jdbc:mysql://localhost:3308/dbproducto"; //
-          String BaseDeDatos = "jdbc:mysql://localhost:3306/BDPRODUCTO"; //
-          String user = "root";
-          String password = "MQL123";
-         conexionBD = DriverManager.getConnection(BaseDeDatos, user, password);  // carga la conexion (usuario contraseña)
-
-         if (conexionBD != null) {
-             JOptionPane.showMessageDialog(null, "¡OK MySQL Server!");
-         } else {
-             JOptionPane.showMessageDialog(null, "Error en la Conexión..");
-         }
-        } catch (Exception e) {
-             JOptionPane.showMessageDialog(null, e.getMessage()+" Error en la Conexión..");
-        }
-        return this;
     }
     
     public boolean ejecutar(String sql) { //
