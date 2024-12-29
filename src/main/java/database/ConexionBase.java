@@ -7,25 +7,27 @@ import javax.swing.JOptionPane;
 
 public abstract class ConexionBase {
 
-    protected String dbUrl;
-    protected String dbUser;
-    protected String dbPassword;
     protected Connection conexionBD;
-
-    // Constructor por defecto
-    public ConexionBase() {}
-
-    // Constructor con parámetros
-    public ConexionBase(String dbUrl, String dbUser, String dbPassword) {
-        this.dbUrl = dbUrl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-    }
 
     // Método abstracto que deben implementar las subclases para cargar el driver
     protected abstract void cargarDriver() throws ClassNotFoundException;
 
-    public abstract boolean conectar();
+    public boolean conectar() throws SQLException, ClassNotFoundException {
+        if (conexionBD != null && !conexionBD.isClosed()) {
+            return true;
+        }
+        cargarDriver();
+        conexionBD = crearConexion();
+        return true;
+    }
+
+    public abstract Connection crearConexion() throws SQLException;
+
+    public void desconectar() throws SQLException {
+        if (conexionBD != null && !conexionBD.isClosed()) {
+            conexionBD.close();
+        }
+    }
 
     // Método para conectar a la base de datos
     /*public void conectar() {
@@ -41,7 +43,7 @@ public abstract class ConexionBase {
     }*/
 
     // Método para desconectar de la base de datos
-    public void desconectar() {
+    /*public void desconectar() {
         try {
             if (conexionBD != null && !conexionBD.isClosed()) {
                 conexionBD.close();
@@ -50,27 +52,5 @@ public abstract class ConexionBase {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al cerrar la conexión: " + e.getMessage());
         }
-    }
-
-    // Método para actualizar las credenciales dinámicamente
-    public void actualizarCredenciales(String dbUrl, String dbUser, String dbPassword) {
-        this.dbUrl = dbUrl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-        JOptionPane.showMessageDialog(null, "Credenciales actualizadas.");
-    }
-
-    // Getters y Setters
-    public String getDbUrl() {
-        return dbUrl;
-    }
-
-    public String getUser() {
-        return dbUser;
-    }
-
-    public String getPassword() {
-        return dbPassword;
-    }
-
+    }*/
 }

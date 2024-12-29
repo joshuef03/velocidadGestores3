@@ -42,6 +42,11 @@ public class ConexionOracle extends ConexionBase{
     }
 
     @Override
+    public Connection crearConexion() throws SQLException {
+        return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+    }
+
+    /*@Override
     public boolean conectar() {
         try {
             cargarDriver(); // Carga el driver específico de la base de datos
@@ -55,7 +60,7 @@ public class ConexionOracle extends ConexionBase{
             JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos: " + e.getMessage());
             return false; // Indica que ocurrió un error al conectar a la base de datos
         }
-    }
+    }*/
 
     public Connection getConexion() {
         return conexionBD;
