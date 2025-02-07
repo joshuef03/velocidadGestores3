@@ -4,12 +4,19 @@
  * and open the template in the editor.
  */
 package velocidadgestores;
-import database.*;
+import database.connections.ConexionMySqlserver;
+import database.connections.ConexionOracle;
+import database.connections.ConexionPostgresql;
+import database.connections.ConexionSqlserver;
+import database.query.QueryExecutor;
+import velocidadgestores.utils.ContadorTiempo;
+import velocidadgestores.utils.SchedulerUtil;
 
 import java.util.*;
 import javax.swing.*;
 import java.sql.*;
 import java.awt.EventQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.*;
 import java.awt.event.*;
 
@@ -34,11 +41,11 @@ public class VentanaPrincipal extends JFrame {
     private void initComponents() {
 
         // Etiquetas de texto para los campos
-        jLabel1 = new JLabel("id:");
-        jLabel2 = new JLabel("descripción:");
-        jLabel3 = new JLabel("costo:");
-        jLabel4 = new JLabel("precio:");
-        jLabel5 = new JLabel("Número de Inserciones:");
+        JLabel jLabel1 = new JLabel("id:");
+        JLabel jLabel2 = new JLabel("descripción:");
+        JLabel jLabel3 = new JLabel("costo:");
+        JLabel jLabel4 = new JLabel("precio:");
+        JLabel jLabel5 = new JLabel("Número de Inserciones:");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -216,7 +223,7 @@ public class VentanaPrincipal extends JFrame {
 
         // Botón de "DB Config"
         dbConfigButton = new JButton("DB Config");
-//        dbConfigButton.addActionListener(e -> abrirDBConfig());
+        dbConfigButton.addActionListener(e -> abrirDBConfig());
 
 
         // Configuración del diseño del contenedor principal
@@ -403,7 +410,7 @@ public class VentanaPrincipal extends JFrame {
      * Este método establece una conexión con la base de datos Oracle.
      */
     private void BTNconexionoracleActionPerformed(ActionEvent evt) {
-        conexionOracle.conectar();
+        conexionOracle.conectar("Oracle 21c");
     }
 
     /**
@@ -411,10 +418,10 @@ public class VentanaPrincipal extends JFrame {
      * Se insertan registros en la tabla "producto" utilizando una sentencia SQL.
      */
     private void BTNinsercion_postgresql_lmdActionPerformed(ActionEvent evt) {
-        ContadorTiempo contadorTiempo = new ContadorTiempo();
+        /*ContadorTiempo contadorTiempo = new ContadorTiempo();
         contadorTiempo.ContadorTiempo();
 
-        conexionPostgresql.conectar();
+
         int contador = 0;
 
         while (true) {
@@ -426,7 +433,7 @@ public class VentanaPrincipal extends JFrame {
             if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
                 break;
             } else {
-                conexionPostgresql.ejecutar("INSERT INTO producto VALUES (" +
+                psgEx.ejecutarSql("INSERT INTO producto VALUES (" +
                         Integer.parseInt(TXTid.getText()) + ", '" +
                         TXTdescripcion.getText() + "', " +
                         Float.parseFloat(TXTcosto.getText()) + ", " +
@@ -434,9 +441,17 @@ public class VentanaPrincipal extends JFrame {
             }
 
             contador++;
-        }
-
-        TXTresultado_lmd_postgresql.setText("Se insertaron " + contador + " registros en un minuto");
+        }*/
+        conexionPostgresql.conectar("PostgreSql 16");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionPsgLmd = () -> psgEx.ejecutarSql(
+                "INSERT INTO producto (id_producto, descripcion, costo, precio) VALUES ('" +
+                        TXTid.getText() + "', '" +
+                        TXTdescripcion.getText() + "', " +
+                        Float.parseFloat(TXTcosto.getText()) + ", " +
+                        Float.parseFloat(TXTprecio.getText()) + ");");
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_lmd_postgresql.setText("Se insertaron " + contador.get() + " registros en un minuto"));
+        runnableTasks(psgEx, insercionPsgLmd, onFinish, contador);
     }
 
     /**
@@ -444,7 +459,7 @@ public class VentanaPrincipal extends JFrame {
      * Este método establece una conexión con la base de datos PostgreSQL.
      */
     private void BTNconexionpostgresqlActionPerformed(ActionEvent evt) {
-        conexionPostgresql.conectar();
+        conexionPostgresql.conectar("PostGreSql 16");
     }
 
 /**
@@ -452,7 +467,7 @@ public class VentanaPrincipal extends JFrame {
  * Se insertan registros en la tabla "producto" utilizando una sentencia SQL.
  */
 private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
-    ContadorTiempo contadorTiempo = new ContadorTiempo();
+    /*ContadorTiempo contadorTiempo = new ContadorTiempo();
     contadorTiempo.ContadorTiempo();
 
 
@@ -467,7 +482,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
             break;
         } else {
-            conexionOracle.ejecutar("INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
+            oraEx.ejecutarSql("INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
                     "PRODUCTO_SEQ.NEXTVAL, " +  // Genera el valor autoincremental para PK_ID
                     Integer.parseInt(TXTid.getText()) + ", '" +
                     TXTdescripcion.getText() + "', " +
@@ -476,11 +491,24 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         }
 
         contador++;
-    }
+    }*/
+    conexionOracle.conectar("Oracle 21c");
+    AtomicInteger contador = new AtomicInteger();
+    Runnable insercionOracleLmd = () -> oraEx.ejecutarSql(
+            "INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
+            "PRODUCTO_SEQ.NEXTVAL, " +  // Genera el valor autoincremental para PK_ID
+            Integer.parseInt(TXTid.getText()) + ", '" +
+            TXTdescripcion.getText() + "', " +
+            Float.parseFloat(TXTcosto.getText()) + ", " +
+            Float.parseFloat(TXTprecio.getText()) + ")");
+    Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_lmd_oracle.setText("Se insertaron " + contador.get() + " registros en un minuto"));
+    runnableTasks(oraEx, insercionOracleLmd, onFinish, contador);
 
-    TXTresultado_lmd_oracle.setText("Se insertaron " + contador + " registros en un minuto");
 }
 
+    private void runnableTasks(QueryExecutor queryInstance, Runnable tipoDeInsercion, Runnable onFinish, AtomicInteger contador) {
+        SchedulerUtil.ejecutarConSchedulerYInserciones(queryInstance, tipoDeInsercion, 1, onFinish, contador);
+    }
 
 
     /**
@@ -488,7 +516,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método establece una conexión con la base de datos SQL Server.
      */
     private void BTNconexionsqlserverActionPerformed(ActionEvent evt) {
-        conexionSqlserver.conectar();
+        conexionSqlserver.conectar("SQL Server");
     }
 
     /**
@@ -496,10 +524,10 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Se insertan registros en la tabla "PRODUCTO" utilizando una sentencia SQL.
      */
     private void BTNinsercion_sqlserver_lmdActionPerformed(ActionEvent evt) {
-        ContadorTiempo contadorTiempo = new ContadorTiempo();
+        /*ContadorTiempo contadorTiempo = new ContadorTiempo();
         contadorTiempo.ContadorTiempo();
 
-        conexionSqlserver.conectar();
+        conexionSqlserver.conectar("SQLServer");
         int contador = 0;
 
         while (true) {
@@ -511,7 +539,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
             if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
                 break;
             } else {
-                conexionSqlserver.ejecutar("INSERT INTO PRODUCTO VALUES (" +
+                mssqlEx.ejecutarSql("INSERT INTO PRODUCTO VALUES (" +
                         Integer.parseInt(TXTid.getText()) + ", '" +
                         TXTdescripcion.getText() + "', " +
                         Float.parseFloat(TXTcosto.getText()) + ", " +
@@ -519,9 +547,17 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
             }
 
             contador++;
-        }
-
-        TXTresultado_lmd_sqlserver.setText("Se insertaron " + contador + " registros en un minuto");
+        }*/
+        conexionSqlserver.conectar("SQL Server");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionSqlServerLmd = () -> mssqlEx.ejecutarSql(
+                "INSERT INTO PRODUCTO VALUES (" +
+                Integer.parseInt(TXTid.getText()) + ", '" +
+                TXTdescripcion.getText() + "', " +
+                Float.parseFloat(TXTcosto.getText()) + ", " +
+                Float.parseFloat(TXTprecio.getText()) + ")");
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_lmd_sqlserver.setText("Se insertaron " + contador + " registros en un minuto"));
+        runnableTasks(mssqlEx, insercionSqlServerLmd, onFinish, contador);
     }
 
     /**
@@ -529,9 +565,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarpostgresqlActionPerformed(ActionEvent evt) {
-        conexionPostgresql.conectar();
-        conexionPostgresql.ejecutar("DELETE FROM producto");
-        conexionPostgresql.ejecutar("ALTER SEQUENCE PRODUCTO_PK_ID_seq RESTART WITH 1");
+        conexionPostgresql.conectar("PostgreSql 16");
+        psgEx.ejecutarSql("DELETE FROM producto");
+        psgEx.ejecutarSql("ALTER SEQUENCE PRODUCTO_PK_ID_seq RESTART WITH 1");
 
         TXTresultado_lmd_postgresql.setText("");
         TXTresultado_sp_postgresql.setText("");
@@ -543,10 +579,10 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarOracleActionPerformed(ActionEvent evt) {
-        conexionOracle.conectar();
-        conexionOracle.ejecutar("DELETE FROM producto");
-        conexionOracle.ejecutar("DROP SEQUENCE PRODUCTO_SEQ");
-        conexionOracle.ejecutar("CREATE SEQUENCE PRODUCTO_SEQ START WITH 1 INCREMENT BY 1");
+        conexionOracle.conectar("Oracle 21c");
+        oraEx.ejecutarSql("DELETE FROM producto");
+        oraEx.ejecutarSql("DROP SEQUENCE PRODUCTO_SEQ");
+        oraEx.ejecutarSql("CREATE SEQUENCE PRODUCTO_SEQ START WITH 1 INCREMENT BY 1");
         
         TXTresultado_lmd_oracle.setText("");
         TXTresultado_sp_oracle.setText("");
@@ -558,9 +594,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarsqlserverActionPerformed(ActionEvent evt) {
-        conexionSqlserver.conectar();
-        conexionSqlserver.ejecutar("DELETE FROM producto");
-        conexionSqlserver.ejecutar("DBCC CHECKIDENT ('PRODUCTO', RESEED, 0)");
+        conexionSqlserver.conectar("SQL Server");
+        mssqlEx.ejecutarSql("DELETE FROM producto");
+        mssqlEx.ejecutarSql("DBCC CHECKIDENT ('PRODUCTO', RESEED, 0)");
 
         TXTresultado_lmd_sqlserver.setText("");
         TXTresultado_sp_sqlserver.setText("");
@@ -572,12 +608,12 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Se insertan registros en la base de datos Oracle utilizando el procedimiento almacenado "PA_INSERTARPRODUCTO".
      */
     private void BTNinsercion_oracle_spActionPerformed(ActionEvent evt) {
-        try {
+        /*try {
 
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexionOracle.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = oraEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -603,7 +639,24 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
-        }
+        }*/
+        conexionOracle.conectar("Oracle 21c");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionOracleSp = () -> {
+            try (
+                    CallableStatement cst = oraEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")
+            ) {
+                cst.setString(1, TXTid.getText());
+                cst.setString(2, TXTdescripcion.getText());
+                cst.setDouble(3, Double.parseDouble(TXTcosto.getText()));
+                cst.setDouble(4, Double.parseDouble(TXTprecio.getText()));
+                cst.execute();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        };
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_sp_oracle.setText("Se insertaron " + contador + " registros en un minuto"));
+        runnableTasks(oraEx, insercionOracleSp, onFinish, contador);
     }
 
 
@@ -612,12 +665,12 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Los registros se insertan en la base de datos SQL Server hasta que se cumple un tiempo específico.
      */
     private void BTNinsercion_sqlserver_spActionPerformed(ActionEvent evt) {
-        try {
-            conexionSqlserver.conectar();
+        /*try {
+
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexionSqlserver.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = mssqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -643,7 +696,22 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
-        }
+        }*/
+        conexionSqlserver.conectar("SQL Server");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionSqlServerSp = () -> {
+            try(CallableStatement cst = mssqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")){
+                cst.setString(1, TXTid.getText());
+                cst.setString(2, TXTdescripcion.getText());
+                cst.setDouble(3, Double.parseDouble(TXTcosto.getText()));
+                cst.setDouble(4, Double.parseDouble(TXTprecio.getText()));
+                cst.execute();
+            } catch (SQLException e){
+                JOptionPane.showMessageDialog(null, e);
+            }
+        };
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_sp_sqlserver.setText("Se insertaron " + contador + " registros en un minuto"));
+        runnableTasks(mssqlEx, insercionSqlServerSp, onFinish, contador);
     }
 
     /**
@@ -651,12 +719,12 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Los registros se insertan en la base de datos PostgreSQL hasta que se cumple un tiempo específico.
      */
     private void BTNinsercion_postgresql_spActionPerformed(ActionEvent evt) {
-        try {
-            conexionPostgresql.conectar();
+        /*try {
+            conexionPostgresql.conectar("PostgreSql 16");
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexionPostgresql.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = psgEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -682,7 +750,22 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
-        }
+        }*/
+        conexionPostgresql.conectar("PostgreSql 16");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionPostgreSp = () -> {
+            try (CallableStatement cst = psgEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")) {
+                cst.setString(1, TXTid.getText());
+                cst.setString(2, TXTdescripcion.getText());
+                cst.setFloat(3, Float.parseFloat(TXTcosto.getText()));
+                cst.setFloat(4, Float.parseFloat(TXTprecio.getText()));
+                cst.execute();
+            } catch(SQLException e){
+                JOptionPane.showMessageDialog(null, e);
+            }
+        };
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_sp_postgresql.setText("Se insertaron " + contador + " registros en un minuto"));
+        runnableTasks(psgEx, insercionPostgreSp, onFinish, contador);
     }
 
     /**
@@ -690,9 +773,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "PRODUCTO".
      */
     private void BTNborrarmysqlserverActionPerformed(ActionEvent evt) {
-        conexionMySqlserver.conectar();
-        conexionMySqlserver.ejecutar("DELETE FROM PRODUCTO");
-        conexionMySqlserver.ejecutar("TRUNCATE TABLE PRODUCTO");
+        conexionMySqlserver.conectar("MySql 8");
+        mySqlEx.ejecutarSql("DELETE FROM PRODUCTO");
+        mySqlEx.ejecutarSql("TRUNCATE TABLE PRODUCTO");
 
         TXTresultado_lmd_mysqlserver.setText("");
         TXTresultado_sp_mysqlserver.setText("");
@@ -705,12 +788,12 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Los registros se insertan en la base de datos MySQL Server hasta que se cumple un tiempo específico.
      */
     private void BTNinsercion_mysqlserver_spActionPerformed(java.awt.event.ActionEvent evt) {
-        try {
-            conexionMySqlserver.conectar();
+        /*try {
+            conexionMySqlserver.conectar("Mysql 8");
             ContadorTiempo contadorTiempo = new ContadorTiempo();
             contadorTiempo.ContadorTiempo();
 
-            CallableStatement cst = conexionMySqlserver.getConexion().prepareCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
+            CallableStatement cst = mySqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
             int contador = 0;
 
             cst.setString(1, TXTid.getText());
@@ -736,7 +819,22 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
-        }
+        }*/
+        conexionMySqlserver.conectar("MySql 8");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionMysqlSql = () -> {
+            try (CallableStatement cst = mySqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")) {
+                cst.setString(1, TXTid.getText());
+                cst.setString(2, TXTdescripcion.getText());
+                cst.setDouble(3, Double.parseDouble(TXTcosto.getText()));
+                cst.setDouble(4, Double.parseDouble(TXTprecio.getText()));
+                cst.execute();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        };
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_sp_mysqlserver.setText("Se insertaron " + contador + " registros en un minuto"));
+        runnableTasks(mySqlEx, insercionMysqlSql, onFinish, contador);
     }
 
     /**
@@ -744,9 +842,9 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     * Los registros se insertan en la base de datos MySQL Server hasta que se cumple un tiempo específico.
     */
     private void BTNinsercion_mysqlserver_lmd1ActionPerformed(ActionEvent evt) {
-        ContadorTiempo contadorTiempo = new ContadorTiempo();
+        /*ContadorTiempo contadorTiempo = new ContadorTiempo();
         contadorTiempo.ContadorTiempo();
-        conexionMySqlserver.conectar();
+        conexionMySqlserver.conectar("Mysql 8");
         int contador = 0;
 
         while (true) {
@@ -759,16 +857,24 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 break;
             } else {
             // La columna PK_ID no se incluye en la sentencia INSERT ya que es autoincremental
-                conexionMySqlserver.ejecutar("INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
+                mySqlEx.ejecutarSql("INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
                         "'" + TXTid.getText() + "', '" +  // Usar comillas simples para valores de texto
                         TXTdescripcion.getText() + "', " +
                         Float.parseFloat(TXTcosto.getText()) + ", " +
                         Float.parseFloat(TXTprecio.getText()) + ")");
                 contador++;
             }
-        }
-
-    TXTresultado_lmd_mysqlserver.setText("Se insertaron " + contador + " registros en un minuto");
+        }*/
+        conexionMySqlserver.conectar("MySql 8");
+        AtomicInteger contador = new AtomicInteger();
+        Runnable insercionMySqlLmd = () -> mySqlEx.ejecutarSql(
+                "INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
+                "'" + TXTid.getText() + "', '" +  // Usar comillas simples para valores de texto
+                TXTdescripcion.getText() + "', " +
+                Float.parseFloat(TXTcosto.getText()) + ", " +
+                Float.parseFloat(TXTprecio.getText()) + ")");
+        Runnable onFinish = () -> SwingUtilities.invokeLater(() -> TXTresultado_lmd_mysqlserver.setText("Se insertaron " + contador + " registros en un minuto"));
+        runnableTasks(mySqlEx, insercionMySqlLmd, onFinish, contador);
     }
 
 
@@ -776,7 +882,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Maneja la acción del botón para conectar a la base de datos MySQL Server.
      */
     private void BTNconexionmysqlserverActionPerformed(ActionEvent evt) {
-        conexionMySqlserver.conectar();
+        conexionMySqlserver.conectar("MySql 8");
     }
 
 
@@ -794,9 +900,8 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
             // Establecer conexión y preparar el CallableStatement según el tipo de base de datos
             if ("Oracle".equals(dbType)) {
-                conexionOracle.conectar();
-                conexion = conexionOracle.getConexion();
-                cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
+                conexionOracle.conectar("Oracle 21c");
+                cst = oraEx.procedureCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
                 for (int i = 0; i < numInserciones; i++) {
                     insertarProductoOracle(cst);
@@ -804,7 +909,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en Oracle.");
 
             } else if ("PostgreSQL".equals(dbType)) {
-                conexionPostgresql.conectar();
+                conexionPostgresql.conectar("PostgreSql 16");
                 conexion = conexionPostgresql.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
@@ -814,7 +919,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en PostgreSQL.");
 
             } else if ("SQLServer".equals(dbType)) {
-                conexionSqlserver.conectar();
+                conexionSqlserver.conectar("SQL Server");
                 conexion = conexionSqlserver.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
@@ -824,7 +929,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en SQL Server.");
 
             } else if ("MySQL".equals(dbType)) {
-                conexionMySqlserver.conectar();
+                conexionMySqlserver.conectar("MySql 8");
                 conexion = conexionMySqlserver.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
@@ -996,17 +1101,17 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     private JTextField TXTresultado_sp_postgresql;
     private JTextField TXTresultado_sp_sqlserver;
     private JTextField TXTnumInserciones;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JLabel jLabel5;
     private JButton dbConfigButton;
 
     private DBConfigD dbConfigDialog;
 
-    private ConexionOracle conexionOracle = ConexionOracle.getInstance();
-    private ConexionMySqlserver conexionMySqlserver = ConexionMySqlserver.getInstance();
-    private ConexionPostgresql conexionPostgresql = ConexionPostgresql.getInstance();
-    private ConexionSqlserver conexionSqlserver = ConexionSqlserver.getInstance();
+    private final ConexionOracle conexionOracle = ConexionOracle.getInstance();
+    private final ConexionMySqlserver conexionMySqlserver = ConexionMySqlserver.getInstance();
+    private final ConexionPostgresql conexionPostgresql = ConexionPostgresql.getInstance();
+    private final ConexionSqlserver conexionSqlserver = ConexionSqlserver.getInstance();
+
+    private final QueryExecutor oraEx = new QueryExecutor(conexionOracle);
+    private final QueryExecutor mySqlEx = new QueryExecutor(conexionMySqlserver);
+    private final QueryExecutor psgEx = new QueryExecutor(conexionPostgresql);
+    private final QueryExecutor mssqlEx = new QueryExecutor(conexionSqlserver);
 }

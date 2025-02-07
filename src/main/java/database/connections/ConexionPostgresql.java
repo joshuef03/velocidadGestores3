@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package database;
+package database.connections;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -11,12 +11,7 @@ import javax.swing.JOptionPane;
  *
  * @author MCROBERTW
  */
-public class ConexionPostgresql extends ConexionBase{
-    private static ConexionPostgresql instance;
-    private Connection conexionBD;
-    private String dbUrl;
-    private String dbUser;
-    private String dbPassword;
+public class ConexionPostgresql extends ConexionBase implements ConexionBD {
 
     private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/BDPRODUCTO";
     private static final String DEFAULT_USER = "postgres";
@@ -33,7 +28,23 @@ public class ConexionPostgresql extends ConexionBase{
         Class.forName("org.postgresql.Driver");
     }
 
+    @Override
+    protected Connection crearConexion() throws SQLException {
+        String URI_PSGSQL = dbUrl + "?autoReconnect=true&relaxAutoCommit=true";
+        return DriverManager.getConnection(URI_PSGSQL, dbUser, dbPassword);
+    }
+
+    private static final class ConexionPostgreSqlHolder {
+        private static final ConexionPostgresql instance = new ConexionPostgresql();
+    }
+
     public static ConexionPostgresql getInstance(){
+        return ConexionPostgreSqlHolder.instance;
+    }
+
+
+}
+    /*public static ConexionPostgresql getInstance(){
         if (instance == null){
             instance = new ConexionPostgresql();
         }
@@ -44,8 +55,7 @@ public class ConexionPostgresql extends ConexionBase{
     public boolean conectar() {
         try {
             cargarDriver();
-            String URI_PSGSQL = dbUrl + "?autoReconnect=true&relaxAutoCommit=true";
-            conexionBD = DriverManager.getConnection(URI_PSGSQL, dbUser, dbPassword);
+
             JOptionPane.showMessageDialog(null, "¡OK POSTGRESQL!");
             return true; // Indica que la conexión fue exitosa
         } catch (ClassNotFoundException e) {
@@ -78,5 +88,4 @@ public class ConexionPostgresql extends ConexionBase{
             JOptionPane.showMessageDialog(null, e.getErrorCode());
             return false;
         }        return true;
-    }
-}
+    }*/

@@ -3,21 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package database;
+package database.connections;
 
 import java.sql.*;
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author MCROBERTW
  */
 public class ConexionSqlserver extends ConexionBase {
-    private static ConexionSqlserver instance;
-    private Connection conexionBD;
-    private String dbUrl;
-    private String dbUser;
-    private String dbPassword;
 
     private static final String DEFAULT_URL = "jdbc:sqlserver://localhost:1433;databaseName=BDPRODUCTO";
     private static final String DEFAULT_USER = "sa";
@@ -34,7 +28,21 @@ public class ConexionSqlserver extends ConexionBase {
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
     }
 
+    @Override
+    protected Connection crearConexion() throws SQLException {
+        String URI_MSSQLS = dbUrl + ";user=" + dbUser + ";password=" + dbPassword + ";encrypt=false";
+        return DriverManager.getConnection(URI_MSSQLS);
+    }
+
+    private static final class ConexionSqlServerHolder{
+        private static final ConexionSqlserver instance = new ConexionSqlserver();
+    }
+
     public static ConexionSqlserver getInstance(){
+        return ConexionSqlServerHolder.instance;
+    }
+}
+    /*public static ConexionSqlserver getInstance(){
         if (instance == null) {
             instance = new ConexionSqlserver();
         }
@@ -74,5 +82,4 @@ public class ConexionSqlserver extends ConexionBase {
              JOptionPane.showMessageDialog(null, e.getMessage());
             return false;
         }        return true;
-    }
-}
+    }*/

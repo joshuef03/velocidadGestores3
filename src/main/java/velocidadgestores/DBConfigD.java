@@ -1,6 +1,6 @@
 package velocidadgestores;
 
-import database.*;
+import database.connections.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -88,8 +88,8 @@ public class DBConfigD extends JDialog {
     // Método auxiliar para cargar credenciales de la instancia activa
     private void cargarCredencialesDesdeInstancia(ConexionBase instancia) {
         dbUrl = instancia.getDbUrl();
-        dbUser = instancia.getUser();
-        dbPassword = instancia.getPassword();
+        dbUser = instancia.getDbUser();
+        dbPassword = instancia.getDbPassword();
 
         hostField.setText(getHostFromUrl(dbUrl));
         portField.setText(getPortFromUrl(dbUrl));
