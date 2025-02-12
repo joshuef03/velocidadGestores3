@@ -34,6 +34,11 @@ public class ConexionPostgresql extends ConexionBase implements ConexionBD {
         return DriverManager.getConnection(URI_PSGSQL, dbUser, dbPassword);
     }
 
+    @Override
+    protected void mostrarMensajeConexion() {
+        JOptionPane.showMessageDialog(null, "Conectado a PostgreSQL exitosamente.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private static final class ConexionPostgreSqlHolder {
         private static final ConexionPostgresql instance = new ConexionPostgresql();
     }

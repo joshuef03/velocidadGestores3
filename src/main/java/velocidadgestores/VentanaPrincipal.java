@@ -410,7 +410,7 @@ public class VentanaPrincipal extends JFrame {
      * Este método establece una conexión con la base de datos Oracle.
      */
     private void BTNconexionoracleActionPerformed(ActionEvent evt) {
-        conexionOracle.conectar("Oracle 21c");
+        conexionOracle.conectar();
     }
 
     /**
@@ -442,7 +442,7 @@ public class VentanaPrincipal extends JFrame {
 
             contador++;
         }*/
-        conexionPostgresql.conectar("PostgreSql 16");
+        conexionPostgresql.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionPsgLmd = () -> psgEx.ejecutarSql(
                 "INSERT INTO producto (id_producto, descripcion, costo, precio) VALUES ('" +
@@ -459,7 +459,7 @@ public class VentanaPrincipal extends JFrame {
      * Este método establece una conexión con la base de datos PostgreSQL.
      */
     private void BTNconexionpostgresqlActionPerformed(ActionEvent evt) {
-        conexionPostgresql.conectar("PostGreSql 16");
+        conexionPostgresql.conectar();
     }
 
 /**
@@ -492,7 +492,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
         contador++;
     }*/
-    conexionOracle.conectar("Oracle 21c");
+    conexionOracle.conectar();
     AtomicInteger contador = new AtomicInteger();
     Runnable insercionOracleLmd = () -> oraEx.ejecutarSql(
             "INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
@@ -516,7 +516,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método establece una conexión con la base de datos SQL Server.
      */
     private void BTNconexionsqlserverActionPerformed(ActionEvent evt) {
-        conexionSqlserver.conectar("SQL Server");
+        conexionSqlserver.conectar();
     }
 
     /**
@@ -548,7 +548,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
             contador++;
         }*/
-        conexionSqlserver.conectar("SQL Server");
+        conexionSqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionSqlServerLmd = () -> mssqlEx.ejecutarSql(
                 "INSERT INTO PRODUCTO VALUES (" +
@@ -565,7 +565,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarpostgresqlActionPerformed(ActionEvent evt) {
-        conexionPostgresql.conectar("PostgreSql 16");
+        conexionPostgresql.conectar();
         psgEx.ejecutarSql("DELETE FROM producto");
         psgEx.ejecutarSql("ALTER SEQUENCE PRODUCTO_PK_ID_seq RESTART WITH 1");
 
@@ -579,7 +579,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarOracleActionPerformed(ActionEvent evt) {
-        conexionOracle.conectar("Oracle 21c");
+        conexionOracle.conectar();
         oraEx.ejecutarSql("DELETE FROM producto");
         oraEx.ejecutarSql("DROP SEQUENCE PRODUCTO_SEQ");
         oraEx.ejecutarSql("CREATE SEQUENCE PRODUCTO_SEQ START WITH 1 INCREMENT BY 1");
@@ -594,7 +594,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "producto".
      */
     private void BTNborrarsqlserverActionPerformed(ActionEvent evt) {
-        conexionSqlserver.conectar("SQL Server");
+        conexionSqlserver.conectar();
         mssqlEx.ejecutarSql("DELETE FROM producto");
         mssqlEx.ejecutarSql("DBCC CHECKIDENT ('PRODUCTO', RESEED, 0)");
 
@@ -640,7 +640,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
         }*/
-        conexionOracle.conectar("Oracle 21c");
+        conexionOracle.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionOracleSp = () -> {
             try (
@@ -697,7 +697,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
         }*/
-        conexionSqlserver.conectar("SQL Server");
+        conexionSqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionSqlServerSp = () -> {
             try(CallableStatement cst = mssqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")){
@@ -751,7 +751,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
         }*/
-        conexionPostgresql.conectar("PostgreSql 16");
+        conexionPostgresql.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionPostgreSp = () -> {
             try (CallableStatement cst = psgEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")) {
@@ -773,7 +773,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Este método elimina todos los registros de la tabla "PRODUCTO".
      */
     private void BTNborrarmysqlserverActionPerformed(ActionEvent evt) {
-        conexionMySqlserver.conectar("MySql 8");
+        conexionMySqlserver.conectar();
         mySqlEx.ejecutarSql("DELETE FROM PRODUCTO");
         mySqlEx.ejecutarSql("TRUNCATE TABLE PRODUCTO");
 
@@ -820,7 +820,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
         }*/
-        conexionMySqlserver.conectar("MySql 8");
+        conexionMySqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionMysqlSql = () -> {
             try (CallableStatement cst = mySqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}")) {
@@ -865,7 +865,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 contador++;
             }
         }*/
-        conexionMySqlserver.conectar("MySql 8");
+        conexionMySqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionMySqlLmd = () -> mySqlEx.ejecutarSql(
                 "INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
@@ -882,7 +882,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Maneja la acción del botón para conectar a la base de datos MySQL Server.
      */
     private void BTNconexionmysqlserverActionPerformed(ActionEvent evt) {
-        conexionMySqlserver.conectar("MySql 8");
+        conexionMySqlserver.conectar();
     }
 
 
@@ -900,7 +900,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
 
             // Establecer conexión y preparar el CallableStatement según el tipo de base de datos
             if ("Oracle".equals(dbType)) {
-                conexionOracle.conectar("Oracle 21c");
+                conexionOracle.conectar();
                 cst = oraEx.procedureCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
                 for (int i = 0; i < numInserciones; i++) {
@@ -909,7 +909,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en Oracle.");
 
             } else if ("PostgreSQL".equals(dbType)) {
-                conexionPostgresql.conectar("PostgreSql 16");
+                conexionPostgresql.conectar();
                 conexion = conexionPostgresql.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
@@ -919,7 +919,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en PostgreSQL.");
 
             } else if ("SQLServer".equals(dbType)) {
-                conexionSqlserver.conectar("SQL Server");
+                conexionSqlserver.conectar();
                 conexion = conexionSqlserver.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 
@@ -929,7 +929,7 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(this, "Se completaron " + numInserciones + " inserciones en SQL Server.");
 
             } else if ("MySQL".equals(dbType)) {
-                conexionMySqlserver.conectar("MySql 8");
+                conexionMySqlserver.conectar();
                 conexion = conexionMySqlserver.getConexion();
                 cst = conexion.prepareCall("{call PA_INSERTARPRODUCTO(?,?,?,?)}");
 

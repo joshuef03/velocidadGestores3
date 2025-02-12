@@ -34,6 +34,11 @@ public class ConexionMySqlserver extends ConexionBase {
         return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
+    @Override
+    protected void mostrarMensajeConexion() {
+        JOptionPane.showMessageDialog(null, "Conectado a MySQL exitosamente.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private static final class ConexionMySqlServerHolder {
         private static final ConexionMySqlserver instance = new ConexionMySqlserver();
     }

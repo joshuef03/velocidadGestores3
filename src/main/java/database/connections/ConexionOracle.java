@@ -5,6 +5,7 @@
  */
 package database.connections;
 
+import javax.swing.*;
 import java.sql.*;
 
 /**
@@ -13,7 +14,7 @@ import java.sql.*;
  */
 public class ConexionOracle extends ConexionBase {
 
-    private static final String DEFAULT_URL = "jdbc:oracle:thin:@localhost/xepdb1";
+    private static final String DEFAULT_URL = "jdbc:oracle:thin:@localhost:1521/xepdb1";
     private static final String DEFAULT_USER = "C##UDB";
     private static final String DEFAULT_PASSWORD = "1234567";
 
@@ -34,6 +35,11 @@ public class ConexionOracle extends ConexionBase {
     @Override
     protected Connection crearConexion() throws SQLException {
         return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+    }
+
+    @Override
+    protected void mostrarMensajeConexion() {
+        JOptionPane.showMessageDialog(null, "Conectado a Oracle exitosamente.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static final class ConexionOracleHolder {

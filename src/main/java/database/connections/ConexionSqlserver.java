@@ -5,6 +5,7 @@
  */
 package database.connections;
 
+import javax.swing.*;
 import java.sql.*;
 
 /**
@@ -32,6 +33,11 @@ public class ConexionSqlserver extends ConexionBase {
     protected Connection crearConexion() throws SQLException {
         String URI_MSSQLS = dbUrl + ";user=" + dbUser + ";password=" + dbPassword + ";encrypt=false";
         return DriverManager.getConnection(URI_MSSQLS);
+    }
+
+    @Override
+    protected void mostrarMensajeConexion() {
+        JOptionPane.showMessageDialog(null, "Conectado a SQL Server exitosamente.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static final class ConexionSqlServerHolder{

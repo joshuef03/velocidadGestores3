@@ -2,6 +2,8 @@ package velocidadgestores;
 
 import database.connections.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -90,7 +92,6 @@ public class DBConfigD extends JDialog {
         dbUrl = instancia.getDbUrl();
         dbUser = instancia.getDbUser();
         dbPassword = instancia.getDbPassword();
-
         hostField.setText(getHostFromUrl(dbUrl));
         portField.setText(getPortFromUrl(dbUrl));
         dbNameField.setText(getDbNameFromUrl(dbUrl));
@@ -183,28 +184,39 @@ public class DBConfigD extends JDialog {
         inicializarCredenciales();
     }
 
-    // Métodos auxiliares para extraer partes de la URL
     private String getHostFromUrl(String url) {
-        try {
-            return url.split("@")[1].split(":")[0];
-        } catch (Exception e) {
-            return "localhost";
-        }
+        if (url == null || url.isEmpty()) return "localhost";
+
+        // Maneja el formato jdbc:oracle:thin:@host:puerto/pdb o jdbc:tipo://host:puerto/dbname
+        Pattern pattern = Pattern.compile("jdbc:[a-zA-Z]+:(?:thin:@|//)([^:/]+)");
+        Matcher matcher = pattern.matcher(url);
+
+        return matcher.find() ? matcher.group(1) : "localhost";
     }
 
     private String getPortFromUrl(String url) {
-        try {
-            return url.split(":")[2].split("/")[0];
-        } catch (Exception e) {
-            return "";
-        }
+        if (url == null || url.isEmpty()) return "";
+
+        // Maneja el formato jdbc:oracle:thin:@host:puerto/pdb y jdbc:tipo://host:puerto/dbname
+        Pattern pattern = Pattern.compile("jdbc:[a-zA-Z]+:(?:thin:@|//)[^:/]+:(\\d+)");
+        Matcher matcher = pattern.matcher(url);
+
+        return matcher.find() ? matcher.group(1) : "";
     }
 
     private String getDbNameFromUrl(String url) {
-        try {
-            return url.split("/")[1];
-        } catch (Exception e) {
-            return "";
+        if (url == null || url.isEmpty()) return "";
+
+        // Maneja SQL Server con databaseName=
+        if (url.contains("databaseName=")) {
+            Pattern pattern = Pattern.compile("databaseName=([^;]+)");
+            Matcher matcher = pattern.matcher(url);
+            return matcher.find() ? matcher.group(1) : "";
+        } else {
+            // Maneja Oracle (PDB) y otros motores que usan "/dbname"
+            Pattern pattern = Pattern.compile("jdbc:[a-zA-Z]+:(?:thin:@|//)[^:/]+:\\d+/([^?;]+)");
+            Matcher matcher = pattern.matcher(url);
+            return matcher.find() ? matcher.group(1) : "";
         }
     }
 }
