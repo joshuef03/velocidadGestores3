@@ -9,10 +9,8 @@ import database.connections.ConexionOracle;
 import database.connections.ConexionPostgresql;
 import database.connections.ConexionSqlserver;
 import database.query.QueryExecutor;
-import velocidadgestores.utils.ContadorTiempo;
 import velocidadgestores.utils.SchedulerUtil;
 
-import java.util.*;
 import javax.swing.*;
 import java.sql.*;
 import java.awt.EventQueue;
@@ -418,30 +416,6 @@ public class VentanaPrincipal extends JFrame {
      * Se insertan registros en la tabla "producto" utilizando una sentencia SQL.
      */
     private void BTNinsercion_postgresql_lmdActionPerformed(ActionEvent evt) {
-        /*ContadorTiempo contadorTiempo = new ContadorTiempo();
-        contadorTiempo.ContadorTiempo();
-
-
-        int contador = 0;
-
-        while (true) {
-            Calendar tiempoActual = Calendar.getInstance();
-            int hora = tiempoActual.get(Calendar.HOUR);
-            int minuto = tiempoActual.get(Calendar.MINUTE);
-            int segundo = tiempoActual.get(Calendar.SECOND);
-
-            if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                break;
-            } else {
-                psgEx.ejecutarSql("INSERT INTO producto VALUES (" +
-                        Integer.parseInt(TXTid.getText()) + ", '" +
-                        TXTdescripcion.getText() + "', " +
-                        Float.parseFloat(TXTcosto.getText()) + ", " +
-                        Float.parseFloat(TXTprecio.getText()) + ");");
-            }
-
-            contador++;
-        }*/
         conexionPostgresql.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionPsgLmd = () -> psgEx.ejecutarSql(
@@ -467,31 +441,6 @@ public class VentanaPrincipal extends JFrame {
  * Se insertan registros en la tabla "producto" utilizando una sentencia SQL.
  */
 private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
-    /*ContadorTiempo contadorTiempo = new ContadorTiempo();
-    contadorTiempo.ContadorTiempo();
-
-
-    int contador = 0;
-
-    while (true) {
-        Calendar tiempoActual = Calendar.getInstance();
-        int hora = tiempoActual.get(Calendar.HOUR);
-        int minuto = tiempoActual.get(Calendar.MINUTE);
-        int segundo = tiempoActual.get(Calendar.SECOND);
-
-        if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-            break;
-        } else {
-            oraEx.ejecutarSql("INSERT INTO producto (PK_ID, ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
-                    "PRODUCTO_SEQ.NEXTVAL, " +  // Genera el valor autoincremental para PK_ID
-                    Integer.parseInt(TXTid.getText()) + ", '" +
-                    TXTdescripcion.getText() + "', " +
-                    Float.parseFloat(TXTcosto.getText()) + ", " +
-                    Float.parseFloat(TXTprecio.getText()) + ")");
-        }
-
-        contador++;
-    }*/
     conexionOracle.conectar();
     AtomicInteger contador = new AtomicInteger();
     Runnable insercionOracleLmd = () -> oraEx.ejecutarSql(
@@ -524,30 +473,6 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Se insertan registros en la tabla "PRODUCTO" utilizando una sentencia SQL.
      */
     private void BTNinsercion_sqlserver_lmdActionPerformed(ActionEvent evt) {
-        /*ContadorTiempo contadorTiempo = new ContadorTiempo();
-        contadorTiempo.ContadorTiempo();
-
-        conexionSqlserver.conectar("SQLServer");
-        int contador = 0;
-
-        while (true) {
-            Calendar tiempoActual = Calendar.getInstance();
-            int hora = tiempoActual.get(Calendar.HOUR);
-            int minuto = tiempoActual.get(Calendar.MINUTE);
-            int segundo = tiempoActual.get(Calendar.SECOND);
-
-            if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                break;
-            } else {
-                mssqlEx.ejecutarSql("INSERT INTO PRODUCTO VALUES (" +
-                        Integer.parseInt(TXTid.getText()) + ", '" +
-                        TXTdescripcion.getText() + "', " +
-                        Float.parseFloat(TXTcosto.getText()) + ", " +
-                        Float.parseFloat(TXTprecio.getText()) + ")");
-            }
-
-            contador++;
-        }*/
         conexionSqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionSqlServerLmd = () -> mssqlEx.ejecutarSql(
@@ -608,38 +533,6 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Se insertan registros en la base de datos Oracle utilizando el procedimiento almacenado "PA_INSERTARPRODUCTO".
      */
     private void BTNinsercion_oracle_spActionPerformed(ActionEvent evt) {
-        /*try {
-
-            ContadorTiempo contadorTiempo = new ContadorTiempo();
-            contadorTiempo.ContadorTiempo();
-
-            CallableStatement cst = oraEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
-            int contador = 0;
-
-            cst.setString(1, TXTid.getText());
-            cst.setString(2, TXTdescripcion.getText());
-            cst.setDouble(3, Double.parseDouble(TXTcosto.getText()));
-            cst.setDouble(4, Double.parseDouble(TXTprecio.getText()));
-
-            while (true) {
-                Calendar tiempoActual = Calendar.getInstance();
-                int hora = tiempoActual.get(Calendar.HOUR);
-                int minuto = tiempoActual.get(Calendar.MINUTE);
-                int segundo = tiempoActual.get(Calendar.SECOND);
-
-                if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                    break;
-                } else {
-                    cst.execute();
-                    contador++;
-                }
-            }
-
-            TXTresultado_sp_oracle.setText("Se insertaron " + contador + " registros en un minuto");
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex);
-        }*/
         conexionOracle.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionOracleSp = () -> {
@@ -665,38 +558,6 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Los registros se insertan en la base de datos SQL Server hasta que se cumple un tiempo específico.
      */
     private void BTNinsercion_sqlserver_spActionPerformed(ActionEvent evt) {
-        /*try {
-
-            ContadorTiempo contadorTiempo = new ContadorTiempo();
-            contadorTiempo.ContadorTiempo();
-
-            CallableStatement cst = mssqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
-            int contador = 0;
-
-            cst.setString(1, TXTid.getText());
-            cst.setString(2, TXTdescripcion.getText());
-            cst.setDouble(3, Double.parseDouble(TXTcosto.getText()));
-            cst.setDouble(4, Double.parseDouble(TXTprecio.getText()));
-
-            while (true) {
-                Calendar tiempoActual = Calendar.getInstance();
-                int hora = tiempoActual.get(Calendar.HOUR);
-                int minuto = tiempoActual.get(Calendar.MINUTE);
-                int segundo = tiempoActual.get(Calendar.SECOND);
-
-                if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                    break;
-                } else {
-                    cst.execute();
-                    contador++;
-                }
-            }
-
-            TXTresultado_sp_sqlserver.setText("Se insertaron " + contador + " registros en un minuto");
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex);
-        }*/
         conexionSqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionSqlServerSp = () -> {
@@ -719,38 +580,6 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Los registros se insertan en la base de datos PostgreSQL hasta que se cumple un tiempo específico.
      */
     private void BTNinsercion_postgresql_spActionPerformed(ActionEvent evt) {
-        /*try {
-            conexionPostgresql.conectar("PostgreSql 16");
-            ContadorTiempo contadorTiempo = new ContadorTiempo();
-            contadorTiempo.ContadorTiempo();
-
-            CallableStatement cst = psgEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
-            int contador = 0;
-
-            cst.setString(1, TXTid.getText());
-            cst.setString(2, TXTdescripcion.getText());
-            cst.setFloat(3, Float.parseFloat(TXTcosto.getText()));
-            cst.setFloat(4, Float.parseFloat(TXTprecio.getText()));
-
-            while (true) {
-                Calendar tiempoActual = Calendar.getInstance();
-                int hora = tiempoActual.get(Calendar.HOUR);
-                int minuto = tiempoActual.get(Calendar.MINUTE);
-                int segundo = tiempoActual.get(Calendar.SECOND);
-
-                if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                    break;
-                } else {
-                    cst.execute();
-                    contador++;
-                }
-            }
-
-            TXTresultado_sp_postgresql.setText("Se insertaron " + contador + " registros en un minuto");
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex);
-        }*/
         conexionPostgresql.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionPostgreSp = () -> {
@@ -788,38 +617,6 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
      * Los registros se insertan en la base de datos MySQL Server hasta que se cumple un tiempo específico.
      */
     private void BTNinsercion_mysqlserver_spActionPerformed(java.awt.event.ActionEvent evt) {
-        /*try {
-            conexionMySqlserver.conectar("Mysql 8");
-            ContadorTiempo contadorTiempo = new ContadorTiempo();
-            contadorTiempo.ContadorTiempo();
-
-            CallableStatement cst = mySqlEx.procedureCall("{call PA_INSERTARPRODUCTO (?,?,?,?)}");
-            int contador = 0;
-
-            cst.setString(1, TXTid.getText());
-            cst.setString(2, TXTdescripcion.getText());
-            cst.setDouble(3, Double.parseDouble(TXTcosto.getText()));
-            cst.setDouble(4, Double.parseDouble(TXTprecio.getText()));
-
-            while (true) {
-                Calendar tiempoActual = Calendar.getInstance();
-                int hora = tiempoActual.get(Calendar.HOUR);
-                int minuto = tiempoActual.get(Calendar.MINUTE);
-                int segundo = tiempoActual.get(Calendar.SECOND);
-
-                if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                    break;
-                } else {
-                    cst.execute();
-                    contador++;
-                }
-            }
-
-            TXTresultado_sp_mysqlserver.setText("Se insertaron " + contador + " registros en un minuto");
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex);
-        }*/
         conexionMySqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionMysqlSql = () -> {
@@ -842,29 +639,6 @@ private void BTNinsercion_oracle_lmdActionPerformed(ActionEvent evt) {
     * Los registros se insertan en la base de datos MySQL Server hasta que se cumple un tiempo específico.
     */
     private void BTNinsercion_mysqlserver_lmd1ActionPerformed(ActionEvent evt) {
-        /*ContadorTiempo contadorTiempo = new ContadorTiempo();
-        contadorTiempo.ContadorTiempo();
-        conexionMySqlserver.conectar("Mysql 8");
-        int contador = 0;
-
-        while (true) {
-            Calendar tiempoActual = Calendar.getInstance();
-            int hora = tiempoActual.get(Calendar.HOUR);
-            int minuto = tiempoActual.get(Calendar.MINUTE);
-            int segundo = tiempoActual.get(Calendar.SECOND);
-
-            if (hora == contadorTiempo.horaDespues && minuto == contadorTiempo.minutoDespues && segundo == contadorTiempo.segundoDespues) {
-                break;
-            } else {
-            // La columna PK_ID no se incluye en la sentencia INSERT ya que es autoincremental
-                mySqlEx.ejecutarSql("INSERT INTO PRODUCTO (ID_PRODUCTO, DESCRIPCION, COSTO, PRECIO) VALUES (" +
-                        "'" + TXTid.getText() + "', '" +  // Usar comillas simples para valores de texto
-                        TXTdescripcion.getText() + "', " +
-                        Float.parseFloat(TXTcosto.getText()) + ", " +
-                        Float.parseFloat(TXTprecio.getText()) + ")");
-                contador++;
-            }
-        }*/
         conexionMySqlserver.conectar();
         AtomicInteger contador = new AtomicInteger();
         Runnable insercionMySqlLmd = () -> mySqlEx.ejecutarSql(
