@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
  *
  * @author MCROBERTW
  */
-public class ConexionPostgresql extends ConexionBase implements ConexionBD {
+public class ConexionPostgresql extends ConexionBase {
 
     private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/BDPRODUCTO";
     private static final String DEFAULT_USER = "postgres";
