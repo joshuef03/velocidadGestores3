@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-from ContadorTiempo import ContadorTiempo
+from src.velocidadgestores.ContadorTiempo import ContadorTiempo
 from src.database.connections.ConexionMySQL import ConexionMySQL
 from src.database.connections.ConexionOracle import ConexionOracle
 from src.database.connections.ConexionPostgresql import ConexionPostgresql
